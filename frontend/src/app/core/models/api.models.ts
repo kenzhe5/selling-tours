@@ -11,15 +11,14 @@ export interface Tour {
   title: string;
   country: string;
   city: string;
-  price_usd: number;
+  price: number;
   start_date: string;
   end_date: string;
   duration_days: number;
   description: string;
-  images: string[];
-  included: string[];
-  hotel_name: string;
+  image_url: string;
   rating: number;
+  available_slots: number;
 }
 
 export interface TourFilters {
@@ -30,6 +29,7 @@ export interface TourFilters {
   date_to?: string;
   sort?: TourSort;
   page?: number;
+  size?: number;
 }
 
 export type TourSort = 'price_asc' | 'price_desc' | 'rating_desc' | 'date_asc';

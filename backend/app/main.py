@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
@@ -6,9 +10,10 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 
-from .api.routes import bookings, countries, health, tours
+from .api.routes import agent, bookings, countries, health, tours
 from .core.config import settings
 from .core.db import engine, init_db
 from .services.seeder import seed_tours
@@ -84,3 +89,12 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(tours.router, prefix="/api", tags=["tours"])
 app.include_router(countries.router, prefix="/api", tags=["countries"])
 app.include_router(bookings.router, prefix="/api", tags=["bookings"])
+app.include_router(agent.router, prefix="/api", tags=["agent"])
+
+_static_dir = os.getenv("STATIC_DIR", "").strip()
+if _static_dir and Path(_static_dir).is_dir():
+    app.mount(
+        "/",
+        StaticFiles(directory=_static_dir, html=True),
+        name="spa",
+    )

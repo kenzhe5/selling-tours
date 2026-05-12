@@ -10,7 +10,7 @@
         <div class="mt-8 grid gap-3 sm:grid-cols-4">
           <div class="rounded-3xl border border-border bg-paper p-4">
             <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Price</p>
-            <p class="mt-2 text-2xl font-black">{{ tour.price_usd | currency: 'USD' : 'symbol' : '1.0-0' }}</p>
+            <p class="mt-2 text-2xl font-black">{{ tour.price | currency: 'USD' : 'symbol' : '1.0-0' }}</p>
           </div>
           <div class="rounded-3xl border border-border bg-paper p-4">
             <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Duration</p>
@@ -21,22 +21,22 @@
             <p class="mt-2 text-2xl font-black">{{ tour.start_date | date: 'MMM d' }}</p>
           </div>
           <div class="rounded-3xl border border-border bg-paper p-4">
-            <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Rating</p>
-            <p class="mt-2 text-2xl font-black">{{ tour.rating }}</p>
+            <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Availability</p>
+            <p class="mt-2 text-2xl font-black">{{ tour.available_slots }} spots</p>
           </div>
         </div>
 
         <div class="mt-8 grid gap-4 sm:grid-cols-[1.5fr_1fr]">
-          <img class="h-full min-h-80 rounded-[2rem] object-cover" [src]="tour.images[0]" [alt]="tour.title" width="760" height="560" />
+          <img class="h-full min-h-80 rounded-[2rem] object-cover" [src]="tour.image_url" [alt]="tour.title" width="760" height="560" />
           <div class="grid gap-4">
-            <img class="h-48 w-full rounded-[2rem] object-cover" [src]="tour.images[1]" [alt]="tour.city" width="480" height="280" />
             <div class="rounded-[2rem] border border-border bg-paper p-6">
-              <p class="text-sm font-black uppercase tracking-[0.16em] text-accent">Included</p>
-              <ul class="mt-4 space-y-2 text-muted">
-                @for (item of tour.included; track item) {
-                  <li class="flex gap-2"><span aria-hidden="true">+</span>{{ item }}</li>
-                }
-              </ul>
+              <p class="text-sm font-black uppercase tracking-[0.16em] text-accent">Guest rating</p>
+              <p class="mt-4 font-display text-5xl font-extrabold">{{ tour.rating }}</p>
+              <p class="mt-2 text-sm text-muted">Average score from verified travelers for this itinerary.</p>
+            </div>
+            <div class="rounded-[2rem] border border-border bg-paper p-6">
+              <p class="text-sm font-black uppercase tracking-[0.16em] text-accent">Ends</p>
+              <p class="mt-4 text-2xl font-black">{{ tour.end_date | date: 'mediumDate' }}</p>
             </div>
           </div>
         </div>
@@ -69,7 +69,7 @@
             </label>
             <label>
               <span class="label">People</span>
-              <input class="field" type="number" min="1" max="12" formControlName="num_people" />
+              <input class="field" type="number" min="1" max="20" formControlName="num_people" />
             </label>
 
             @if (form.invalid && form.touched) {

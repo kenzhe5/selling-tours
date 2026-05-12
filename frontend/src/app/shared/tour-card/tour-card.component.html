@@ -3,7 +3,7 @@
     <div class="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-border">
       <img
         class="h-full w-full object-cover transition duration-200 hover:scale-[1.02]"
-        [src]="tour().images[0]"
+        [src]="tour().image_url"
         [alt]="tour().title + ' in ' + tour().country"
         width="640"
         height="480"
@@ -23,7 +23,7 @@
           <a [routerLink]="['/tours', tour().id]" class="text-ink no-underline hover:text-accent-dark">{{ tour().title }}</a>
         </h2>
       </div>
-      <p class="shrink-0 text-right text-lg font-black text-ink">{{ tour().price_usd | currency: 'USD' : 'symbol' : '1.0-0' }}</p>
+      <p class="shrink-0 text-right text-lg font-black text-ink">{{ tour().price | currency: 'USD' : 'symbol' : '1.0-0' }}</p>
     </div>
 
     <p class="line-clamp-2 text-base leading-7 text-muted">{{ tour().description }}</p>
@@ -31,7 +31,7 @@
     <div class="flex flex-wrap items-center gap-2 text-sm font-semibold text-muted">
       <span class="rounded-full border border-border bg-paper px-3 py-1">{{ tour().duration_days }} days</span>
       <span class="rounded-full border border-border bg-paper px-3 py-1">{{ tour().start_date | date: 'MMM d' }}</span>
-      <span class="rounded-full border border-border bg-paper px-3 py-1">{{ tour().hotel_name }}</span>
+      <span class="rounded-full border border-border bg-paper px-3 py-1">{{ tour().available_slots }} spots</span>
     </div>
   </div>
 </article>

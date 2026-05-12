@@ -1,0 +1,4 @@
+[ 1333060ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/Users/diamond/Desktop/selling-tours/frontend/.angular/cache/21.2.10/selling-tours-frontend/vite/deps/chunk-7AH5S3WC.js?v=cd9a7db2:14435
+[ 1808743ms] [ERROR] WebSocket connection to 'ws://localhost:4200/?token=aqkwURdgi1PZ' failed:  @ http://localhost:4200/@vite/client:744
+[ 1808743ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 1811928ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/Users/diamond/Desktop/selling-tours/frontend/.angular/cache/21.2.10/selling-tours-frontend/vite/deps/chunk-7AH5S3WC.js?v=cd9a7db2:14435

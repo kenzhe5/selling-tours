@@ -27,7 +27,7 @@ export class TourDetailPageComponent implements OnInit {
     user_name: ['', [Validators.required, Validators.minLength(2)]],
     user_email: ['', [Validators.required, Validators.email]],
     start_date: ['', Validators.required],
-    num_people: [2, [Validators.required, Validators.min(1), Validators.max(12)]],
+    num_people: [2, [Validators.required, Validators.min(1), Validators.max(20)]],
   });
 
   ngOnInit(): void {
