@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: Selling Tours API
+  version: 0.1.0
+  description: REST contract for the tours platform — list/filter tours, view a tour, list countries, and create/list bookings.
+servers:
+  - url: http://localhost:8000
+    description: Local backend
+
+paths:
+  /api/health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/tours:
+    get:
+      summary: List tours with filters, sort, pagination
+      parameters:
+        - in: query
+          name: country
+          schema: { type: string }
+        - in: query
+          name: price_min
+          schema: { type: number, minimum: 0 }
+        - in: query
+          name: price_max
+          schema: { type: number, minimum: 0 }
+        - in: query
+          name: date_from
+          schema: { type: string, format: date }
+        - in: query
+          name: date_to
+          schema: { type: string, format: date }
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [price_asc, price_desc, rating_desc, date_asc]
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: size
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: Paginated list of tours
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TourList"
+        "422":
+          $ref: "#/components/responses/Error"
+
+  /api/tours/{tour_id}:
+    get:
+      summary: Get a tour by id
+      parameters:
+        - in: path
+          name: tour_id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Single tour
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tour"
+        "404":
+          $ref: "#/components/responses/Error"
+
+  /api/countries:
+    get:
+      summary: Distinct countries currently offered
+      responses:
+        "200":
+          description: Country list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { type: string }
+
+  /api/bookings:
+    post:
+      summary: Create a booking for a tour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingCreate"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+    get:
+      summary: List bookings for a given email
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema: { type: string, format: email }
+      responses:
+        "200":
+          description: Booking list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+        "422":
+          $ref: "#/components/responses/Error"
+
+components:
+  schemas:
+    Tour:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        country: { type: string }
+        city: { type: string }
+        price: { type: number }
+        duration_days: { type: integer }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        description: { type: string }
+        image_url: { type: string }
+        rating: { type: number }
+        available_slots: { type: integer }
+
+    TourList:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Tour" }
+        total: { type: integer }
+        page: { type: integer }
+        size: { type: integer }
+
+    BookingCreate:
+      type: object
+      required: [tour_id, user_name, user_email, start_date, num_people]
+      properties:
+        tour_id: { type: string, format: uuid }
+        user_name: { type: string, minLength: 1, maxLength: 200 }
+        user_email: { type: string, format: email }
+        start_date: { type: string, format: date }
+        num_people: { type: integer, minimum: 1, maximum: 20 }
+
+    Booking:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        tour_id: { type: string, format: uuid }
+        user_name: { type: string }
+        user_email: { type: string, format: email }
+        start_date: { type: string, format: date }
+        num_people: { type: integer }
+        status: { type: string }
+        created_at: { type: string, format: date-time }
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: { type: object }
+
+  responses:
+    Error:
+      description: Error envelope
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
