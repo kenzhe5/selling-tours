@@ -1,0 +1,35 @@
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Node / npm (любая папка в репозитории) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tgz
+
+# --- Angular / фронтенд сборка ---
+dist/
+.angular/
+coverage/
+*.tsbuildinfo
+
+# --- IDE ---
+.idea/
+*.swp
+*.swo
+
+# --- Env (шаблоны *.example не игнорируем) ---
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+!**/.env.example
+
+# Python-кэш вне backend/, если появится
+__pycache__/
+*.py[cod]
