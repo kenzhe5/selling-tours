@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, select
+from fastapi.responses import StreamingResponse
+from sqlmodel import Session
 
+from ...ai.langchain_agent import agent_chat_sse_events, assistant_reply
 from ...core.db import get_session
-from ...models.tour import Tour
 from ...schemas.agent import AgentChatRequest, AgentChatResponse
 
 router = APIRouter()
@@ -15,40 +16,21 @@ def agent_chat(
     body: AgentChatRequest,
     session: Session = Depends(get_session),
 ) -> AgentChatResponse:
-    tours = list(session.exec(select(Tour).order_by(Tour.rating.desc())).all())
-    if not tours:
-        return AgentChatResponse(
-            reply="The catalog is empty right now. Please try again later.",
-            suggested_tour_ids=[],
-        )
+    return assistant_reply(session, body)
 
-    normalized = body.message.lower()
-    price_hint: str | None = None
-    for token in normalized.replace(",", " ").split():
-        if token.isdigit() and len(token) >= 2:
-            price_hint = token
-            break
 
-    candidates: list[Tour] = []
-    for tour in tours:
-        if tour.country.lower() in normalized or tour.city.lower() in normalized:
-            candidates.append(tour)
-            continue
-        title_words = [w for w in tour.title.lower().split() if len(w) > 3]
-        if any(w in normalized for w in title_words):
-            candidates.append(tour)
-            continue
-        if price_hint and str(int(tour.price)).startswith(price_hint[:2]):
-            candidates.append(tour)
-
-    suggestions = (candidates if candidates else tours[:2])[:3]
-    titles = [t.title for t in suggestions]
-    reply = (
-        f"I would start with {titles[0]}. It lines up with common briefs and booking flow. "
-        f"You can compare {len(suggestions)} suggested options below."
-    )
-
-    return AgentChatResponse(
-        reply=reply,
-        suggested_tour_ids=[str(t.id) for t in suggestions],
+@router.post("/agent/chat/stream")
+def agent_chat_stream(
+    body: AgentChatRequest,
+    session: Session = Depends(get_session),
+) -> StreamingResponse:
+    generator = agent_chat_sse_events(session, body)
+    return StreamingResponse(
+        generator,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
     )

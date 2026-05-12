@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,6 +24,8 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./tours.db"
     cors_origins_line: str = Field(default="", validation_alias="CORS_ORIGINS")
     seed_path: str = "../contracts/tours_seed.json"
+    openai_api_key: Optional[str] = Field(default=None, validation_alias="OPENAI_API_KEY")
+    openai_model: str = Field(default="gpt-4o-mini", validation_alias="OPENAI_MODEL")
 
     @property
     def cors_origins(self) -> list[str]:

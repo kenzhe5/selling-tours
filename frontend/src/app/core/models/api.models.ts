@@ -73,8 +73,18 @@ export interface AgentChatResponse {
   suggested_tour_ids: string[];
 }
 
+export type AgentChatStreamEvent =
+  | { kind: 'step'; detail: string }
+  | { kind: 'done'; response: AgentChatResponse }
+  | { kind: 'error'; message: string };
+
+export interface SuggestedTourChip {
+  id: string;
+  title: string;
+}
+
 export interface ChatMessage {
   role: 'assistant' | 'user';
   text: string;
-  suggested_tour_ids?: string[];
+  suggested_tours?: SuggestedTourChip[];
 }

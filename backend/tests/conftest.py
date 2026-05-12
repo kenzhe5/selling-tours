@@ -6,6 +6,11 @@ from pathlib import Path
 # Make sure tests use an isolated SQLite DB regardless of any .env on disk.
 _TMP_DIR = Path(tempfile.mkdtemp(prefix="tours-test-"))
 os.environ["DATABASE_URL"] = f"sqlite:///{_TMP_DIR / 'test.db'}"
+os.environ.pop("OPENAI_MODEL", None)
+# pydantic-settings still reads OPENAI_API_KEY from backend/.env when present —
+# force heuristic mode unless a test overrides this.
+os.environ["OPENAI_API_KEY"] = ""
+
 
 # Point seeder at the real contracts file relative to the repo.
 _BACKEND_ROOT = Path(__file__).resolve().parents[1]

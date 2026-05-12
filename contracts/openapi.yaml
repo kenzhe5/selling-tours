@@ -137,6 +137,47 @@ paths:
         "422":
           $ref: "#/components/responses/Error"
 
+  /api/agent/chat:
+    post:
+      summary: Ask AI tour assistant (LangChain-backed when OPENAI_API_KEY is set)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentChatRequest"
+      responses:
+        "200":
+          description: Assistant reply and optional tour IDs for UI chips
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentChatResponse"
+        "422":
+          $ref: "#/components/responses/Error"
+
+  /api/agent/chat/stream:
+    post:
+      summary: Same as /api/agent/chat but streams Server-Sent Events (text/event-stream)
+      description: |
+        SSE `data:` JSON lines. Repeated `{ "event": "step", "detail": "…" }` then final
+        `{ "event": "done", "reply": "…", "suggested_tour_ids": [] }` matching AgentChatResponse fields.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentChatRequest"
+      responses:
+        "200":
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        "422":
+          $ref: "#/components/responses/Error"
+
 components:
   schemas:
     Tour:
@@ -164,6 +205,22 @@ components:
         total: { type: integer }
         page: { type: integer }
         size: { type: integer }
+
+    AgentChatRequest:
+      type: object
+      required: [session_id, message]
+      properties:
+        session_id: { type: string }
+        message: { type: string }
+
+    AgentChatResponse:
+      type: object
+      required: [reply, suggested_tour_ids]
+      properties:
+        reply: { type: string }
+        suggested_tour_ids:
+          type: array
+          items: { type: string, format: uuid }
 
     BookingCreate:
       type: object

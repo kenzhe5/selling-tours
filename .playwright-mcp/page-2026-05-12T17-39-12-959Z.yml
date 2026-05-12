@@ -1,0 +1,33 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Skip to content" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e4]:
+      - navigation "Primary navigation" [ref=e5]:
+        - link "Selling Tours home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: ST
+          - generic [ref=e8]: Selling Tours
+        - generic [ref=e9]:
+          - link "Tours" [ref=e10] [cursor=pointer]:
+            - /url: /
+          - link "My bookings" [ref=e11] [cursor=pointer]:
+            - /url: /my-bookings
+          - link "Browse" [ref=e12] [cursor=pointer]:
+            - /url: /#catalog
+    - main [ref=e13]:
+      - generic [ref=e16]:
+        - paragraph [ref=e17]: "404"
+        - heading "This route wandered off." [level=1] [ref=e18]
+        - paragraph [ref=e19]: Return to the catalog and keep the booking demo on the happy path.
+        - link "Back to tours" [ref=e20] [cursor=pointer]:
+          - /url: /
+    - contentinfo [ref=e21]:
+      - generic [ref=e22]:
+        - paragraph [ref=e23]: Premium tour booking demo. Built with Angular, SCSS, Tailwind and a backend-ready REST contract.
+        - paragraph [ref=e24]: No real payment required
+    - button "Open AI tour assistant" [ref=e26]: Ask AI
+  - generic [ref=e29]:
+    - generic [ref=e30]: Could not resolve "../../../shared/filter-panel/filter-panel.component"
+    - generic [ref=e31]: src/app/features/tours/tour-list-page.component.ts:6:37
+    - generic [ref=e32]: Click outside, press Esc key, or fix the code to dismiss.
