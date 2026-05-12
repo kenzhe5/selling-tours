@@ -7,9 +7,11 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./tours.db"
     cors_origins: list[str] = [
         "http://localhost:3000",
+        "http://localhost:4200",
         "http://localhost:5173",
         "http://localhost:8001",
         "http://127.0.0.1:3000",
+        "http://127.0.0.1:4200",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:8001",
     ]

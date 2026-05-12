@@ -1,0 +1,33 @@
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[[plugins]]
+origin = "default"
+package = "@netlify/angular-runtime"
+
+[plugins.inputs]
+
+[build]
+publish = "/Users/kenzhe/selling-tours/selling-tours/frontend/dist/selling-tours-frontend/browser"
+publishOrigin = "inline"
+commandOrigin = "ui"
+base = "/Users/kenzhe/selling-tours/selling-tours/frontend"
+command = "npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
