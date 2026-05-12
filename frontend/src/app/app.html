@@ -1,0 +1,29 @@
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<header class="sticky top-0 z-40 border-b border-border bg-cream/95 backdrop-blur">
+  <nav class="container-page flex min-h-20 items-center justify-between gap-6" aria-label="Primary navigation">
+    <a routerLink="/" class="flex items-center gap-3 text-ink" aria-label="Selling Tours home">
+      <span class="flex size-11 items-center justify-center rounded-full border border-ink bg-paper font-display text-xl font-extrabold">ST</span>
+      <span class="hidden text-sm font-black uppercase tracking-[0.18em] sm:inline">Selling Tours</span>
+    </a>
+
+    <div class="flex items-center gap-2 sm:gap-4">
+      <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">Tours</a>
+      <a routerLink="/my-bookings" routerLinkActive="active-link" class="nav-link">My bookings</a>
+      <a routerLink="/" fragment="catalog" class="btn-primary hidden sm:inline-flex">Browse</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main-content" tabindex="-1">
+  <router-outlet />
+</main>
+
+<footer class="border-t border-border bg-paper py-10">
+  <div class="container-page flex flex-col gap-4 text-sm text-muted md:flex-row md:items-center md:justify-between">
+    <p>Premium tour booking demo. Built with Angular, SCSS, Tailwind and a backend-ready REST contract.</p>
+    <p class="font-bold uppercase tracking-[0.16em]">No real payment required</p>
+  </div>
+</footer>
+
+<app-chat-widget />

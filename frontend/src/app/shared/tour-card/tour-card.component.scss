@@ -1,0 +1,15 @@
+.tour-card {
+  border-radius: 2.25rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-paper);
+  padding: 0.75rem;
+  box-shadow: 0 18px 50px rgb(31 26 23 / 0.08);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 60px rgb(31 26 23 / 0.12);
+  }
+}

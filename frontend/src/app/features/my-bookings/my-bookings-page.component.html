@@ -1,0 +1,52 @@
+<section class="container-page grid gap-10 py-12 lg:grid-cols-[0.8fr_1.2fr] lg:py-20">
+  <div>
+    <p class="text-sm font-black uppercase tracking-[0.22em] text-accent">Lookup</p>
+    <h1 class="section-title mt-3">Find bookings by email.</h1>
+    <p class="mt-5 text-xl leading-8 text-muted">
+      The backend contract uses email as the lightweight identity for the seminar MVP. Try `demo@example.com`.
+    </p>
+  </div>
+
+  <div class="rounded-[2rem] border border-border bg-paper p-6 shadow-sm">
+    <form class="flex flex-col gap-4 sm:flex-row" [formGroup]="form" (ngSubmit)="search()">
+      <label class="flex-1">
+        <span class="label">Email</span>
+        <input class="field" type="email" formControlName="email" autocomplete="email" />
+      </label>
+      <button class="btn-primary self-end" type="submit">Search</button>
+    </form>
+
+    @if (form.invalid && form.touched) {
+      <p class="mt-4 rounded-2xl border border-accent bg-cream p-3 text-sm font-semibold text-accent-dark">Enter a valid email.</p>
+    }
+
+    <div class="mt-8">
+      @if (bookings$ | async; as bookings) {
+        @if (bookings.length) {
+          <div class="space-y-4">
+            @for (booking of bookings; track booking.id) {
+              <article class="rounded-[2rem] border border-border bg-cream p-5">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p class="text-xs font-black uppercase tracking-[0.16em] text-accent">{{ booking.status }}</p>
+                    <h2 class="mt-1 font-display text-3xl font-extrabold tracking-[-0.04em]">
+                      {{ booking.tour?.title || booking.tour_id }}
+                    </h2>
+                    <p class="mt-2 text-muted">{{ booking.num_people }} people / starts {{ booking.start_date | date: 'mediumDate' }}</p>
+                  </div>
+                  <a class="btn-secondary" [routerLink]="['/tours', booking.tour_id]">Open tour</a>
+                </div>
+                <p class="mt-4 text-sm text-muted">Reference: {{ booking.id }} / Created {{ booking.created_at | date: 'medium' }}</p>
+              </article>
+            }
+          </div>
+        } @else if (searched()) {
+          <div class="rounded-[2rem] border border-dashed border-border bg-cream p-8 text-center">
+            <h2 class="font-display text-3xl font-extrabold">No bookings found</h2>
+            <p class="mt-2 text-muted">Use the same email from your booking form.</p>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>

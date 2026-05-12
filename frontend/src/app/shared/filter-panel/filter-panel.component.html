@@ -1,0 +1,58 @@
+<section class="rounded-[2rem] border border-border bg-paper p-5 shadow-sm" aria-labelledby="filters-title">
+  <div class="mb-5 flex items-center justify-between gap-4">
+    <div>
+      <p class="text-xs font-black uppercase tracking-[0.18em] text-accent">Find your fit</p>
+      <h2 id="filters-title" class="font-display text-3xl font-extrabold tracking-[-0.04em]">Filters</h2>
+    </div>
+    <span class="rounded-full bg-cream px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-muted">
+      {{ activeCount() }} active
+    </span>
+  </div>
+
+  <form class="grid gap-4 md:grid-cols-2 xl:grid-cols-6" (ngSubmit)="apply()">
+    <label>
+      <span class="label">Country</span>
+      <select class="field" name="country" [ngModel]="country()" (ngModelChange)="country.set($event)">
+        <option value="">Any country</option>
+        @for (countryName of countries(); track countryName) {
+          <option [value]="countryName">{{ countryName }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      <span class="label">Min price</span>
+      <input class="field" type="number" min="0" name="price_min" placeholder="900" [ngModel]="priceMin()" (ngModelChange)="priceMin.set($event)" />
+    </label>
+
+    <label>
+      <span class="label">Max price</span>
+      <input class="field" type="number" min="0" name="price_max" placeholder="2500" [ngModel]="priceMax()" (ngModelChange)="priceMax.set($event)" />
+    </label>
+
+    <label>
+      <span class="label">From</span>
+      <input class="field" type="date" name="date_from" [ngModel]="dateFrom()" (ngModelChange)="dateFrom.set($event)" />
+    </label>
+
+    <label>
+      <span class="label">To</span>
+      <input class="field" type="date" name="date_to" [ngModel]="dateTo()" (ngModelChange)="dateTo.set($event)" />
+    </label>
+
+    <label>
+      <span class="label">Sort</span>
+      <select class="field" name="sort" [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+        <option value="rating_desc">Best rated</option>
+        <option value="price_asc">Price low</option>
+        <option value="price_desc">Price high</option>
+        <option value="date_asc">Soonest</option>
+      </select>
+    </label>
+
+    <div class="flex flex-col gap-3 md:col-span-2 xl:col-span-6 xl:flex-row">
+      <button class="btn-primary" type="submit">Apply filters</button>
+      <button class="btn-secondary" type="button" (click)="reset()">Reset</button>
+    </div>
+  </form>
+</section>

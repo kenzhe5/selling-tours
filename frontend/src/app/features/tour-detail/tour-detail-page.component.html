@@ -1,0 +1,103 @@
+@if (tour$ | async; as tour) {
+  @if (tour) {
+    <section class="container-page grid gap-10 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
+      <div>
+        <a routerLink="/" class="mb-6 inline-flex text-sm font-black uppercase tracking-[0.16em] text-accent">&larr; Back to tours</a>
+        <p class="text-sm font-black uppercase tracking-[0.22em] text-accent">{{ tour.country }} / {{ tour.city }}</p>
+        <h1 class="section-title mt-3">{{ tour.title }}</h1>
+        <p class="mt-5 max-w-2xl text-xl leading-8 text-muted">{{ tour.description }}</p>
+
+        <div class="mt-8 grid gap-3 sm:grid-cols-4">
+          <div class="rounded-3xl border border-border bg-paper p-4">
+            <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Price</p>
+            <p class="mt-2 text-2xl font-black">{{ tour.price_usd | currency: 'USD' : 'symbol' : '1.0-0' }}</p>
+          </div>
+          <div class="rounded-3xl border border-border bg-paper p-4">
+            <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Duration</p>
+            <p class="mt-2 text-2xl font-black">{{ tour.duration_days }} days</p>
+          </div>
+          <div class="rounded-3xl border border-border bg-paper p-4">
+            <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Starts</p>
+            <p class="mt-2 text-2xl font-black">{{ tour.start_date | date: 'MMM d' }}</p>
+          </div>
+          <div class="rounded-3xl border border-border bg-paper p-4">
+            <p class="text-xs font-black uppercase tracking-[0.14em] text-muted">Rating</p>
+            <p class="mt-2 text-2xl font-black">{{ tour.rating }}</p>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-4 sm:grid-cols-[1.5fr_1fr]">
+          <img class="h-full min-h-80 rounded-[2rem] object-cover" [src]="tour.images[0]" [alt]="tour.title" width="760" height="560" />
+          <div class="grid gap-4">
+            <img class="h-48 w-full rounded-[2rem] object-cover" [src]="tour.images[1]" [alt]="tour.city" width="480" height="280" />
+            <div class="rounded-[2rem] border border-border bg-paper p-6">
+              <p class="text-sm font-black uppercase tracking-[0.16em] text-accent">Included</p>
+              <ul class="mt-4 space-y-2 text-muted">
+                @for (item of tour.included; track item) {
+                  <li class="flex gap-2"><span aria-hidden="true">+</span>{{ item }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="h-fit rounded-[2rem] border border-border bg-paper p-6 shadow-sm lg:sticky lg:top-28">
+        <p class="text-sm font-black uppercase tracking-[0.18em] text-accent">Reserve without payment</p>
+        <h2 class="mt-2 font-display text-4xl font-extrabold tracking-[-0.04em]">Book this tour</h2>
+        <p class="mt-2 text-muted">Your request will post `tour_id`, `user_name`, `user_email`, `start_date`, and `num_people`.</p>
+
+        @if (submittedBooking(); as booking) {
+          <div class="mt-6 rounded-3xl border border-teal bg-cream p-5">
+            <p class="font-black text-teal">Booking confirmed</p>
+            <p class="mt-2 text-sm text-muted">Reference: {{ booking.id }}</p>
+            <a class="btn-secondary mt-4" routerLink="/my-bookings">View my bookings</a>
+          </div>
+        } @else {
+          <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit(tour)">
+            <label>
+              <span class="label">Full name</span>
+              <input class="field" formControlName="user_name" autocomplete="name" />
+            </label>
+            <label>
+              <span class="label">Email</span>
+              <input class="field" type="email" formControlName="user_email" autocomplete="email" />
+            </label>
+            <label>
+              <span class="label">Start date</span>
+              <input class="field" type="date" formControlName="start_date" />
+            </label>
+            <label>
+              <span class="label">People</span>
+              <input class="field" type="number" min="1" max="12" formControlName="num_people" />
+            </label>
+
+            @if (form.invalid && form.touched) {
+              <p class="rounded-2xl border border-accent bg-cream p-3 text-sm font-semibold text-accent-dark">
+                Please fill in a valid name, email, date, and group size.
+              </p>
+            }
+            @if (submitError()) {
+              <p class="rounded-2xl border border-accent bg-cream p-3 text-sm font-semibold text-accent-dark">{{ submitError() }}</p>
+            }
+
+            <button class="btn-primary w-full" type="submit" [disabled]="submitting()">
+              {{ submitting() ? 'Booking...' : 'Create booking' }}
+            </button>
+          </form>
+        }
+      </aside>
+    </section>
+  } @else {
+    <section class="container-page py-20">
+      <div class="rounded-[2rem] border border-border bg-paper p-10 text-center">
+        <h1 class="section-title">Tour not found</h1>
+        <a class="btn-primary mt-6" routerLink="/">Back to catalog</a>
+      </div>
+    </section>
+  }
+} @else {
+  <section class="container-page py-16">
+    <div class="h-[34rem] animate-pulse rounded-[2rem] border border-border bg-paper"></div>
+  </section>
+}

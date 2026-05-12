@@ -1,0 +1,70 @@
+<section class="border-b border-border bg-paper">
+  <div class="container-page grid gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:py-20">
+    <div class="max-w-3xl">
+      <p class="mb-4 text-sm font-black uppercase tracking-[0.22em] text-accent">Curated travel, contract-ready API</p>
+      <h1 class="section-title">Book tours that feel hand-picked, not mass produced.</h1>
+      <p class="mt-6 max-w-2xl text-xl leading-8 text-muted">
+        Filter by country, price and dates, open a detailed itinerary, and create a no-payment booking through the same field names the backend expects.
+      </p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a class="btn-primary" href="#catalog">Explore catalog</a>
+        <a class="btn-secondary" href="/my-bookings">Check booking</a>
+      </div>
+    </div>
+
+    <aside class="rounded-[2rem] border border-border bg-cream p-6">
+      <p class="text-sm font-black uppercase tracking-[0.18em] text-teal">MVP coverage</p>
+      <dl class="mt-5 grid grid-cols-3 gap-4">
+        <div>
+          <dt class="text-3xl font-black text-ink">6</dt>
+          <dd class="text-sm text-muted">seed tours</dd>
+        </div>
+        <div>
+          <dt class="text-3xl font-black text-ink">5</dt>
+          <dd class="text-sm text-muted">API routes</dd>
+        </div>
+        <div>
+          <dt class="text-3xl font-black text-ink">0</dt>
+          <dd class="text-sm text-muted">payments</dd>
+        </div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<section id="catalog" class="container-page py-10 md:py-14">
+  @if (countries$ | async; as countries) {
+    <app-filter-panel [countries]="countries" (filtersChange)="applyFilters($event)" (resetFilters)="resetFilters()" />
+  }
+
+  <div class="mt-10">
+    @if (tours$ | async; as tours) {
+      <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-sm font-black uppercase tracking-[0.18em] text-accent">Available tours</p>
+          <h2 class="font-display text-4xl font-extrabold tracking-[-0.04em]">{{ tours.total }} journeys found</h2>
+        </div>
+        <p class="text-sm font-semibold text-muted">Page {{ tours.page }} / showing {{ tours.items.length }} cards</p>
+      </div>
+
+      @if (tours.items.length) {
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          @for (tour of tours.items; track tour.id) {
+            <app-tour-card [tour]="tour" />
+          }
+        </div>
+      } @else {
+        <div class="rounded-[2rem] border border-dashed border-border bg-paper p-10 text-center">
+          <h3 class="font-display text-3xl font-extrabold">No tours match these filters.</h3>
+          <p class="mt-3 text-muted">Widen the price range or clear country and date filters.</p>
+        </div>
+      }
+    } @else {
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-label="Loading tours">
+        @for (item of [1, 2, 3]; track item) {
+          <div class="h-96 animate-pulse rounded-[2rem] border border-border bg-paper"></div>
+        }
+      </div>
+    }
+  </div>
+</section>
