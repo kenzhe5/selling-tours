@@ -1,5 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TourApiService } from '@core/api/tour-api.service';
 import { PaginatedTours, TourFilters } from '@core/models/api.models';
@@ -8,7 +9,7 @@ import { TourCardComponent } from '@shared/tour-card/tour-card.component';
 
 @Component({
   selector: 'app-tour-list-page',
-  imports: [AsyncPipe, FilterPanelComponent, TourCardComponent],
+  imports: [AsyncPipe, FilterPanelComponent, TourCardComponent, RouterLink],
   templateUrl: './tour-list-page.component.html',
 })
 export class TourListPageComponent implements OnInit {

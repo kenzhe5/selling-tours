@@ -11,12 +11,25 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlmodel import Session
 
 from .api.routes import agent, bookings, countries, health, tours
 from .core.config import settings
 from .core.db import engine, init_db
 from .services.seeder import seed_tours
+
+
+class SPAStaticFiles(StaticFiles):
+    """Angular history routes: reload on /my-bookings etc. falls back to index.html."""
+
+    async def get_response(self, path: str, scope):  # type: ignore[no-untyped-def]
+        try:
+            return await super().get_response(path, scope)
+        except StarletteHTTPException as exc:
+            if exc.status_code != 404 or scope["method"] not in {"GET", "HEAD"}:
+                raise
+            return await super().get_response("index.html", scope)
 
 
 @asynccontextmanager
@@ -95,6 +108,6 @@ _static_dir = os.getenv("STATIC_DIR", "").strip()
 if _static_dir and Path(_static_dir).is_dir():
     app.mount(
         "/",
-        StaticFiles(directory=_static_dir, html=True),
+        SPAStaticFiles(directory=_static_dir, html=True),
         name="spa",
     )
