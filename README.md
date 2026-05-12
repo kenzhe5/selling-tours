@@ -2,6 +2,8 @@
 
 Веб-платформа для **каталога туров**, **фильтрации**, **просмотра деталей** и **оформления бронирования без оплаты** (MVP). Бэкенд отдаёт REST API и при прод-сборке может отдавать тот же SPA, что упрощает деплой одним сервисом.
 
+**Живой деплой (Railway):** [selling-tours-production.up.railway.app](https://selling-tours-production.up.railway.app/) · [Swagger /docs](https://selling-tours-production.up.railway.app/docs)
+
 ---
 
 ## Возможности
@@ -134,7 +136,7 @@ docker compose up --build
 | `GET` | `/api/bookings?email=` | Список броней по email |
 | `POST` | `/api/agent/chat` | Тело: `{ "session_id", "message" }`; ответ с `reply` и `suggested_tour_ids` |
 
-Полная схема: **`contracts/openapi.yaml`** и интерактивно **`/docs`**.
+Полная схема: **`contracts/openapi.yaml`** и интерактивно **`/docs`** (локально или на проде: […/docs](https://selling-tours-production.up.railway.app/docs)).
 
 ---
 
@@ -158,6 +160,10 @@ pytest -q      # или: make test
 ---
 
 ## Деплой (Railway, один сервис)
+
+**Текущий прод:** сервис развёрнут на [https://selling-tours-production.up.railway.app/](https://selling-tours-production.up.railway.app/) — тот же хост отдаёт SPA и API под префиксом `/api`.
+
+Повторить деплой:
 
 1. Подключить репозиторий к Railway.  
 2. Корень проекта — **корень репозитория** (где лежит корневой **`Dockerfile`**).  
