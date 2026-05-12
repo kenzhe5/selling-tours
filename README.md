@@ -1,10 +1,172 @@
-Сайт по продаже туров
+# Selling Tours
 
-Описание
-Платформа для подбора и бронирования туров.
+Веб-платформа для **каталога туров**, **фильтрации**, **просмотра деталей** и **оформления бронирования без оплаты** (MVP). Бэкенд отдаёт REST API и при прод-сборке может отдавать тот же SPA, что упрощает деплой одним сервисом.
 
-Функционал сайта
-Список туров
-Страница тура
-Фильтры: страна, цена, даты
-Бронирование без реальной оплаты
+---
+
+## Возможности
+
+**Для пользователя**
+
+- Каталог туров с карточками (изображение, страна, город, цена, рейтинг, доступность мест).
+- Фильтры: страна, диапазон цен, даты заезда/выезда, сортировка (цена, рейтинг, даты).
+- Страница тура с описанием и формой бронирования (имя, email, дата старта, число человек).
+- Раздел «Мои брони» — поиск по email.
+- Виджет чата с подсказками туров на основе текста запроса (правила на стороне API, без внешней LLM).
+
+**Для разработки и эксплуатации**
+
+- Единый контракт данных: сиды в `contracts/tours_seed.json`, описание API — `contracts/openapi.yaml`.
+- Ошибки API в едином формате `{ "error": { "code", "message", "details" } }`.
+- Автосид пустой БД при старте приложения.
+- Юнит- и интеграционные тесты бэкенда (pytest).
+
+---
+
+## Архитектура
+
+```mermaid
+flowchart LR
+  subgraph browser [Браузер]
+    SPA[Angular SPA]
+  end
+  subgraph server [Сервер]
+    API[FastAPI /api]
+    Static[Статика SPA при STATIC_DIR]
+  end
+  subgraph data [Данные]
+    DB[(SQLite или PostgreSQL)]
+  end
+  SPA -->|HTTP same-origin или CORS| API
+  SPA --> Static
+  API --> DB
+```
+
+| Слой | Технологии |
+| --- | --- |
+| Фронтенд | **Angular 21**, **Tailwind CSS 4**, **RxJS**, lazy-loaded маршруты, `HttpClient` |
+| Бэкенд | **Python 3.12**, **FastAPI**, **SQLModel**, **Pydantic Settings**, **Uvicorn** |
+| БД | **SQLite** по умолчанию; **PostgreSQL** через `DATABASE_URL` (например Docker Compose или Railway) |
+
+---
+
+## Структура репозитория
+
+```
+selling-tours/
+├── frontend/           # SPA (Angular)
+├── backend/            # API (FastAPI), тесты, Alembic
+├── contracts/          # tours_seed.json, openapi.yaml
+├── Dockerfile          # Полный образ: сборка фронта + API + статика (Railway и т.п.)
+├── docker-compose.yml  # Postgres + backend (только API)
+└── README.md
+```
+
+Маршруты SPA: `/` (каталог), `/tours/:id` (тур и бронь), `/my-bookings` (поиск брони по email).
+
+---
+
+## Локальный запуск
+
+### Бэкенд (SQLite)
+
+```bash
+cd backend
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+- API: http://127.0.0.1:8000  
+- Swagger: http://127.0.0.1:8000/docs  
+
+При первом запуске создаются таблицы и подтягиваются туры из `contracts/tours_seed.json` (если таблица пуста).
+
+### Фронтенд
+
+```bash
+cd frontend
+npm ci
+npm start
+```
+
+Приложение: http://localhost:4200  
+
+В `frontend/src/environments/environment.ts` задан `apiUrl: 'http://localhost:8000'` — запросы идут на локальный API.
+
+### Postgres + бэкенд (Docker)
+
+Из **корня** репозитория:
+
+```bash
+docker compose up --build
+```
+
+Поднимается PostgreSQL и контейнер API на порту **8000**. Переменные и путь к сиду уже заданы в `docker-compose.yml`.
+
+---
+
+## Переменные окружения (бэкенд)
+
+См. `backend/.env.example`. Основное:
+
+| Переменная | Назначение |
+| --- | --- |
+| `DATABASE_URL` | Строка подключения SQLAlchemy (SQLite по умолчанию или `postgresql+psycopg://...`) |
+| `SEED_PATH` | Путь к JSON с турами для сида |
+| `CORS_ORIGINS` | Дополнительные origin через **запятую** (к доменам для локальной разработки); для отдельного фронта на другом URL |
+| `STATIC_DIR` | Каталог со собранным SPA; если задан и существует, FastAPI отдаёт статику с `html=True` (удобно для одного домена) |
+| `PORT` | Порт HTTP (используется в корневом `Dockerfile`; Railway подставляет автоматически) |
+
+---
+
+## API (кратко)
+
+Префикс **`/api`**. Примеры:
+
+| Метод | Путь | Описание |
+| --- | --- | --- |
+| `GET` | `/api/health` | Проверка живости |
+| `GET` | `/api/tours` | Список с фильтрами: `country`, `price_min`, `price_max`, `date_from`, `date_to`, `sort`, `page`, `size` |
+| `GET` | `/api/tours/{uuid}` | Карточка тура |
+| `GET` | `/api/countries` | `{ "items": ["...", ...] }` — страны из каталога |
+| `POST` | `/api/bookings` | Создание брони; уменьшает `available_slots` при успехе |
+| `GET` | `/api/bookings?email=` | Список броней по email |
+| `POST` | `/api/agent/chat` | Тело: `{ "session_id", "message" }`; ответ с `reply` и `suggested_tour_ids` |
+
+Полная схема: **`contracts/openapi.yaml`** и интерактивно **`/docs`**.
+
+---
+
+## Сборка и тесты
+
+**Фронтенд**
+
+```bash
+cd frontend
+npm run build    # production; подставляется environment.prod.ts (apiUrl '' для same-origin)
+npm test         # Vitest через Angular CLI
+```
+
+**Бэкенд**
+
+```bash
+cd backend
+pytest -q      # или: make test
+```
+
+---
+
+## Деплой (Railway, один сервис)
+
+1. Подключить репозиторий к Railway.  
+2. Корень проекта — **корень репозитория** (где лежит корневой **`Dockerfile`**).  
+3. Сгенерировать публичный домен в настройках сервиса (**Networking**).  
+
+Образ собирает Angular, кладёт артефакты в `/app/static`, выставляет `STATIC_DIR` и запускает Uvicorn на **`PORT`**. Запросы к API: `https://<ваш-домен>/api/...`, интерфейс — с того же хоста.
+
+Для **постоянных броней** в проде подключите **PostgreSQL** (плагин Railway) и задайте **`DATABASE_URL`** в сервисе приложения. В контейнере с SQLite файлы БД обычно не переживают пересборку без тома.
+
+Если фронт и API на **разных** Railway URL: в прод-сборке фронта укажите полный `apiUrl` бэкенда и добавьте домен фронта в **`CORS_ORIGINS`** на бэкенде.
+
+---
